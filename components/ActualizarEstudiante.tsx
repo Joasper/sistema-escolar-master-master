@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Modal,
   ModalContent,
@@ -17,7 +17,7 @@ import { useForm } from "../src/SistemaEscolar/Hooks/useForm";
 import { OnActiveStudent } from "../src/Store/Estudiantes/EstudianteSlice";
 import { useDispatch } from "react-redux";
 import { useSystemEstudiantes } from "../src/Hooks/useSystemEstudiantes";
-
+import { useEffect } from "react";
 const init = {
   Matricula: "1234",
   Nombre: "",
@@ -28,14 +28,25 @@ const init = {
   Estado: "",
 };
 
-export const ModalEstudiante = () => {
+export const ActualizarEstudiante = ({
+  isOpen,
+  openModal,
+  closeModal,
+  user,
+}) => {
+  const { startCreateStudent, EstudianteActive, startUpdateStudent } =
+    useSystemEstudiantes();
+  console.log(user);
+  const [SexoUser, setSexoUser] = useState(EstudianteActive.Sexo);
+
   const dispatch = useDispatch();
-  const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
-  const { startCreateStudent } = useSystemEstudiantes();
+  // const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
+
   const {
-    Matricula,
     formState,
     onInputChange,
+    setFormState,
+    Matricula,
     Nombre,
     Apellido,
     FechaNacimiento,
@@ -43,25 +54,39 @@ export const ModalEstudiante = () => {
     Edad,
     Estado,
   } = useForm(init);
+  useEffect(() => {
+    setSexoUser(EstudianteActive.Sexo || "");
+  }, [EstudianteActive]);
+
+  useEffect(() => {
+    setFormState({
+      Matricula: EstudianteActive?.Matricula,
+      Nombre: EstudianteActive?.Nombre,
+      Apellido: EstudianteActive?.Apellido,
+      FechaNacimiento: EstudianteActive?.FechaNacimiento,
+      Sexo: user?.Sexo,
+      Edad: EstudianteActive?.Edad,
+      Estado: user?.Estado,
+    });
+  }, [EstudianteActive]);
+
   const handleSubmit = (event) => {
     event.preventDefault();
     console.log("Matricula");
     console.log(formState);
+    startUpdateStudent(formState, EstudianteActive._id);
 
-    startCreateStudent(formState);
-    onClose();
+    //startCreateStudent(formState);
+    closeModal();
     // dispatch(OnActiveStudent(formState));
   };
 
   return (
     <div>
       {" "}
-      <Button onPress={onOpen} color="primary">
-        Agregar Estudiante
-      </Button>
       <Modal
         isOpen={isOpen}
-        onOpenChange={onOpenChange}
+        onOpenChange={openModal}
         placement="top-center"
         backdrop="blur"
         size={"full"}
@@ -72,7 +97,7 @@ export const ModalEstudiante = () => {
             {(onClose) => (
               <>
                 <ModalHeader className="flex flex-col gap-1">
-                  Agregar Estudiante
+                  Actualizar Estudiante
                 </ModalHeader>
                 <ModalBody>
                   <div className="flex w-full flex-wrap md:flex-nowrap mb-6 md:mb-0 gap-4">
@@ -118,6 +143,7 @@ export const ModalEstudiante = () => {
                       label="Sexo"
                       fullWidth
                       name="Sexo"
+                      defaultSelectedKeys={[user.Sexo]}
                       value={Sexo}
                       onChange={onInputChange}
                       className="input-sex"
@@ -145,6 +171,7 @@ export const ModalEstudiante = () => {
                       name="Estado"
                       value={Estado}
                       onChange={onInputChange}
+                      defaultSelectedKeys={[user.Estado]}
                       className="input-sex"
                     >
                       <SelectItem key={"Inscrito"} value={"Inscrito"}>
@@ -160,7 +187,7 @@ export const ModalEstudiante = () => {
                   </div>
                 </ModalBody>
                 <ModalFooter>
-                  <Button color="danger" variant="flat" onPress={onClose}>
+                  <Button color="danger" variant="flat" onPress={closeModal}>
                     Cancelar
                   </Button>
                   <Button color="primary" type="submit">

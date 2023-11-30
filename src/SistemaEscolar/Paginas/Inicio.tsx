@@ -8,5 +8,9 @@ export const Inicio = () => {
     startSetEstudents();
   }, []);
 
-  return <div>Inicio</div>;
+  return (
+    <div>
+      <button>Hola</button>
+    </div>
+  );
 };

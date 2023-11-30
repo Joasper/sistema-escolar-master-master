@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { IoAdd } from "react-icons/io5";
 
 import {
@@ -23,6 +23,9 @@ import { useSystemEstudiantes } from "../src/Hooks/useSystemEstudiantes";
 import img from "../public/undraw_male_avatar_g98d.svg";
 import imgWoman from "../public/undraw_female_avatar_efig.svg";
 import { ModalEstudiante } from "./Modal";
+import { ActualizarEstudiante } from "./ActualizarEstudiante";
+import { useDispatch } from "react-redux";
+import { OnActiveStudent } from "../src/Store/Estudiantes/EstudianteSlice";
 
 const statusColorMap = {
   active: "success",
@@ -31,11 +34,27 @@ const statusColorMap = {
 };
 
 export default function App() {
-  const { startSetEstudents, estudiantes = { estudiantes: [] } } =
-    useSystemEstudiantes();
+  const dispatch = useDispatch();
+
+  const {
+    startSetEstudents,
+    estudiantes = { estudiantes: [] },
+    startDeleteStudent,
+  } = useSystemEstudiantes();
   useEffect(() => {
     startSetEstudents();
   }, []);
+
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+  const [UserData, setUserData] = useState("");
+
+  const handleOpenUpdateModal = () => {
+    setIsUpdateModalOpen(true);
+  };
+
+  const handleCloseUpdateModal = () => {
+    setIsUpdateModalOpen(false);
+  };
 
   const newStudents = estudiantes?.estudiantes?.map((estudiante, index) => ({
     ...estudiante,
@@ -65,6 +84,19 @@ export default function App() {
 
   const renderCell = React.useCallback((user, columnKey) => {
     const cellValue = user[columnKey];
+
+    const DeleteStudent = (student) => {
+      console.log(student);
+      startDeleteStudent(student._id);
+    };
+
+    const UpdateStudent = (student) => {
+      console.log(student);
+      dispatch(OnActiveStudent(student));
+      setUserData(student);
+
+      setIsUpdateModalOpen(true);
+    };
 
     switch (columnKey) {
       case "Nombre":
@@ -134,19 +166,14 @@ export default function App() {
       case "actions":
         return (
           <div className="relative flex items-center gap-2">
-            <Tooltip content="Details">
-              <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                <EyeIcon />
-              </span>
-            </Tooltip>
             <Tooltip content="Edit user">
               <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                <EditIcon onClick={() => console.log("Hola")} />
+                <EditIcon onClick={() => UpdateStudent(user)} />
               </span>
             </Tooltip>
             <Tooltip color="danger" content="Delete user">
               <span className="text-lg text-danger cursor-pointer active:opacity-50">
-                <DeleteIcon />
+                <DeleteIcon onClick={() => DeleteStudent(user)} />
               </span>
             </Tooltip>
           </div>
@@ -160,6 +187,12 @@ export default function App() {
     <div className="">
       <div className="flex justify-end mb-5">
         <ModalEstudiante />
+        <ActualizarEstudiante
+          isOpen={isUpdateModalOpen}
+          openModal={handleOpenUpdateModal}
+          closeModal={handleCloseUpdateModal}
+          user={UserData}
+        />
       </div>
       <Table
         aria-label="Example table with custom cells"

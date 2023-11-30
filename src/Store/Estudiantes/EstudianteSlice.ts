@@ -7,17 +7,23 @@ export const EstudianteSlice = createSlice({
   //declaracion del estado inicial de las variables
   initialState: {
     estudiantes: [],
+    EstudianteActive: [],
+    Modal: null,
   },
   //funciones que modifican el estado
   reducers: {
     OnSetEstudents: (state, { payload }: EstudiantesSliceProps[]) => {
       state.estudiantes = payload;
     },
-    decrement: (state) => {},
-    //incremeta por una cantidad dada
-    incrementByAmount: (state, action) => {},
+    OnActiveStudent: (state, { payload }) => {
+      state.EstudianteActive = payload;
+    },
+    OpenModal: (state, { payload }) => {
+      state.Modal = payload;
+    },
   },
+  //incremeta por una cantidad dada
 });
 
-export const { OnSetEstudents, decrement, incrementByAmount } =
+export const { OnSetEstudents, OnActiveStudent, OpenModal } =
   EstudianteSlice.actions;
