@@ -1,0 +1,1 @@
+import { EstudiantesSliceProps } from "./Estudiante";
