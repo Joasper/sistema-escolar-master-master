@@ -32,6 +32,7 @@ export default function App() {
 
   const newStudents = estudiantes?.estudiantes?.map((estudiante, index) => ({
     ...estudiante,
+    id: index.toString(), // Agregar una propiedad 'id' única
     key: index.toString(),
     status:
       estudiante.Estado === "Desinscrito"
@@ -40,6 +41,7 @@ export default function App() {
         ? "primary"
         : "active",
   }));
+
   const [page, setPage] = React.useState(1);
   const rowsPerPage = 4;
 
