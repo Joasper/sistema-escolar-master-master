@@ -1,4 +1,6 @@
 import React, { useEffect } from "react";
+import { IoAdd } from "react-icons/io5";
+
 import {
   Table,
   TableHeader,
@@ -11,6 +13,7 @@ import {
   Tooltip,
   getKeyValue,
   Pagination,
+  Button,
 } from "@nextui-org/react";
 import { EditIcon } from "./EditIcon";
 import { DeleteIcon } from "./DeleteIcon";
@@ -19,6 +22,7 @@ import { columns, users } from "./data";
 import { useSystemEstudiantes } from "../src/Hooks/useSystemEstudiantes";
 import img from "../public/undraw_male_avatar_g98d.svg";
 import imgWoman from "../public/undraw_female_avatar_efig.svg";
+import { ModalEstudiante } from "./Modal";
 
 const statusColorMap = {
   active: "success",
@@ -137,7 +141,7 @@ export default function App() {
             </Tooltip>
             <Tooltip content="Edit user">
               <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                <EditIcon />
+                <EditIcon onClick={() => console.log("Hola")} />
               </span>
             </Tooltip>
             <Tooltip color="danger" content="Delete user">
@@ -153,44 +157,49 @@ export default function App() {
   }, []);
 
   return (
-    <Table
-      aria-label="Example table with custom cells"
-      bottomContent={
-        <div className="flex w-full justify-center">
-          <Pagination
-            showShadow
-            isCompact
-            showControls
-            color="secondary"
-            page={page}
-            total={pages}
-            onChange={(page) => setPage(page)}
-          />
-        </div>
-      }
-      classNames={{
-        wrapper: "min-h-[222px]",
-      }}
-    >
-      <TableHeader columns={columns}>
-        {(column) => (
-          <TableColumn
-            key={column.uid}
-            align={column.uid === "actions" ? "center" : "start"}
-          >
-            {column.name}
-          </TableColumn>
-        )}
-      </TableHeader>
-      <TableBody items={items || []}>
-        {(item) => (
-          <TableRow key={item.id}>
-            {(columnKey) => (
-              <TableCell>{renderCell(item, columnKey)}</TableCell>
-            )}
-          </TableRow>
-        )}
-      </TableBody>
-    </Table>
+    <div className="">
+      <div className="flex justify-end mb-5">
+        <ModalEstudiante />
+      </div>
+      <Table
+        aria-label="Example table with custom cells"
+        bottomContent={
+          <div className="flex w-full justify-center">
+            <Pagination
+              showShadow
+              isCompact
+              showControls
+              color="secondary"
+              page={page}
+              total={pages}
+              onChange={(page) => setPage(page)}
+            />
+          </div>
+        }
+        classNames={{
+          wrapper: "min-h-[222px]",
+        }}
+      >
+        <TableHeader columns={columns}>
+          {(column) => (
+            <TableColumn
+              key={column.uid}
+              align={column.uid === "actions" ? "center" : "start"}
+            >
+              {column.name}
+            </TableColumn>
+          )}
+        </TableHeader>
+        <TableBody items={items || []}>
+          {(item) => (
+            <TableRow key={item.id}>
+              {(columnKey) => (
+                <TableCell>{renderCell(item, columnKey)}</TableCell>
+              )}
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+    </div>
   );
 }
