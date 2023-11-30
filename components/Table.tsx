@@ -17,6 +17,8 @@ import { DeleteIcon } from "./DeleteIcon";
 import { EyeIcon } from "./EyeIcon";
 import { columns, users } from "./data";
 import { useSystemEstudiantes } from "../src/Hooks/useSystemEstudiantes";
+import img from "../public/undraw_male_avatar_g98d.svg";
+import imgWoman from "../public/undraw_female_avatar_efig.svg";
 
 const statusColorMap = {
   active: "success",
@@ -25,7 +27,8 @@ const statusColorMap = {
 };
 
 export default function App() {
-  const { startSetEstudents, estudiantes } = useSystemEstudiantes();
+  const { startSetEstudents, estudiantes = { estudiantes: [] } } =
+    useSystemEstudiantes();
   useEffect(() => {
     startSetEstudents();
   }, []);
@@ -37,9 +40,11 @@ export default function App() {
     status:
       estudiante.Estado === "Desinscrito"
         ? "paused"
-        : estudiante.Estado === "Proceso"
+        : estudiante.Estado == "Proceso"
         ? "primary"
         : "active",
+    FechaNacimiento: estudiante.FechaNacimeinto.toString().substring(0, 10),
+    avatar: estudiante.Sexo === "Femenino" ? imgWoman : img,
   }));
 
   const [page, setPage] = React.useState(1);
@@ -153,9 +158,9 @@ export default function App() {
       bottomContent={
         <div className="flex w-full justify-center">
           <Pagination
+            showShadow
             isCompact
             showControls
-            showShadow
             color="secondary"
             page={page}
             total={pages}
@@ -163,6 +168,9 @@ export default function App() {
           />
         </div>
       }
+      classNames={{
+        wrapper: "min-h-[222px]",
+      }}
     >
       <TableHeader columns={columns}>
         {(column) => (
@@ -174,7 +182,7 @@ export default function App() {
           </TableColumn>
         )}
       </TableHeader>
-      <TableBody items={items}>
+      <TableBody items={items || []}>
         {(item) => (
           <TableRow key={item.id}>
             {(columnKey) => (
